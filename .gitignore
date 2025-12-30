@@ -1,3 +1,42 @@
+# =============================================================================
+# Project-Specific Ignores
+# =============================================================================
+
+# MLflow artifacts and runs (can be large)
+mlruns/
+mlartifacts/
+
+# Model files (large binary files - keep in releases or cloud storage)
+models/*.joblib
+models/*.pkl
+models/*.h5
+models/*.pt
+!models/.gitkeep
+
+# Processed data (can be regenerated from raw data)
+data/processed/
+!data/processed/.gitkeep
+
+# Reports (generated outputs)
+reports/*.html
+reports/*.pdf
+!reports/.gitkeep
+
+# Large datasets (keep original dataset/ folder)
+*.parquet
+*.feather
+
+# Streamlit cache
+.streamlit/
+
+# Docker
+*.tar
+docker-compose.override.yml
+
+# =============================================================================
+# Python Standard Ignores
+# =============================================================================
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
