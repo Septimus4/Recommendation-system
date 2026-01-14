@@ -13,6 +13,8 @@
   "test_rmse": 27847.738778431216,
   "test_mae": 15214.394077843719,
   "test_r2": 0.8984858307478968,
+  "training_samples": 10775,
+  "test_samples": 2355,
   "supported_crops": [
     "Maize",
     "Potatoes",
