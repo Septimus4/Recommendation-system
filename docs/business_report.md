@@ -4,12 +4,14 @@
 
 ---
 
+> **Model Update Note**: The production model no longer uses `rainfall_mm` as a feature. Analysis revealed that rainfall data in the training set was a country-level constant (same value for all years), making it confounded with country identity. The updated model uses only `pesticides_tonnes` and `avg_temp` as numeric features, achieving improved accuracy (R² = 0.94).
+
 ### Executive Summary
 
 This report presents the design, development, and evaluation of a **machine learning-powered agricultural decision support system**. The system predicts crop yields and provides data-driven recommendations to help farmers optimize their agricultural decisions based on environmental conditions.
 
 **Key Results:**
-- Achieved **89.85% predictive accuracy** (R² score) on unseen test data
+- Achieved **94.2% predictive accuracy** (R² score) on unseen test data
 - Successfully supports **10 major crop types** across **101 countries**
 - Deployed as a production-ready API with an intuitive web interface
 

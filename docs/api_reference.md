@@ -53,7 +53,7 @@ Get information about the loaded model.
   "model_version": "Random Forest",
   "supported_crops": ["Wheat", "Maize", "Rice, paddy", ...],
   "supported_countries": ["India", "United States", ...],
-  "features": ["rainfall_mm", "pesticides_tonnes", "avg_temp", "crop", "country"]
+  "features": ["pesticides_tonnes", "avg_temp", "crop", "country"]
 }
 ```
 
@@ -71,7 +71,6 @@ Predict crop yield for specific conditions.
 |-------|------|----------|-------------|
 | crop | string | Yes | Crop name (e.g., "Wheat") |
 | country | string | Yes | Country name (e.g., "India") |
-| rainfall_mm | float | Yes | Average annual rainfall (0-10000 mm) |
 | pesticides_tonnes | float | Yes | Pesticides usage (≥0 tonnes) |
 | avg_temp | float | Yes | Average temperature (-50 to 60 °C) |
 
@@ -83,7 +82,6 @@ curl -X POST http://localhost:8000/predict \
   -d '{
     "crop": "Wheat",
     "country": "India",
-    "rainfall_mm": 1000,
     "pesticides_tonnes": 5000,
     "avg_temp": 20
   }'
@@ -121,7 +119,6 @@ Get ranked crop recommendations based on conditions.
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | country | string | Yes | Country name |
-| rainfall_mm | float | Yes | Average annual rainfall (0-10000 mm) |
 | pesticides_tonnes | float | Yes | Pesticides usage (≥0 tonnes) |
 | avg_temp | float | Yes | Average temperature (-50 to 60 °C) |
 | top_n | int | No | Number of recommendations (1-20) |
@@ -133,7 +130,6 @@ curl -X POST http://localhost:8000/recommend \
   -H "Content-Type: application/json" \
   -d '{
     "country": "India",
-    "rainfall_mm": 1000,
     "pesticides_tonnes": 5000,
     "avg_temp": 20,
     "top_n": 5
@@ -160,7 +156,6 @@ curl -X POST http://localhost:8000/recommend \
   ],
   "context": {
     "country": "India",
-    "rainfall_mm": 1000,
     "pesticides_tonnes": 5000,
     "avg_temp": 20
   },
@@ -185,7 +180,7 @@ All errors return JSON with a `detail` field:
 | Error | Cause | Solution |
 |-------|-------|----------|
 | "Crop 'X' is not supported" | Invalid crop name | Use a supported crop |
-| "rainfall_mm must be non-negative" | Negative value | Use value ≥ 0 |
+| "pesticides_tonnes must be non-negative" | Negative value | Use value ≥ 0 |
 | "Model not loaded" | Server startup issue | Restart API |
 
 ---

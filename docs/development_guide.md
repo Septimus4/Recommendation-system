@@ -197,7 +197,7 @@ curl http://localhost:8000/health
 # Prediction
 curl -X POST http://localhost:8000/predict \
   -H "Content-Type: application/json" \
-  -d '{"crop": "Wheat", "country": "India", "rainfall_mm": 1000, "pesticides_tonnes": 5000, "avg_temp": 20}'
+  -d '{"crop": "Wheat", "country": "India", "pesticides_tonnes": 5000, "avg_temp": 20}'
 ```
 
 ---

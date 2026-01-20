@@ -22,7 +22,6 @@ Predict yield for a specific crop.
 2. Choose your **crop** from the dropdown
 3. Select your **country**
 4. Set environmental parameters:
-   - **Rainfall**: Annual rainfall in mm (slider)
    - **Pesticides**: Usage in tonnes (number input)
    - **Temperature**: Average temp in °C (slider)
 5. Click **🔮 Predict Yield**

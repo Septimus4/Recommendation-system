@@ -35,11 +35,12 @@ Technical documentation for the machine learning model.
 
 | Feature | Type | Description |
 |---------|------|-------------|
-| rainfall_mm | Numeric | Annual rainfall |
 | pesticides_tonnes | Numeric | Pesticide usage |
 | avg_temp | Numeric | Average temperature |
 | crop | Categorical | Crop type (10 categories) |
 | country | Categorical | Country (101 categories) |
+
+> **Note**: Rainfall was removed from the model because the training data contains only country-level averages (same value for all years), making it confounded with country identity.
 
 ### Feature Preprocessing
 
@@ -83,7 +84,7 @@ RandomForestRegressor(
 ```python
 Pipeline([
     ('preprocessor', ColumnTransformer([
-        ('num', numeric_pipeline, ['rainfall_mm', 'pesticides_tonnes', 'avg_temp']),
+        ('num', numeric_pipeline, ['pesticides_tonnes', 'avg_temp']),
         ('cat', categorical_pipeline, ['crop', 'country'])
     ])),
     ('model', RandomForestRegressor())
@@ -122,7 +123,6 @@ model = joblib.load('models/model_pipeline.joblib')
 # Make prediction
 import pandas as pd
 input_df = pd.DataFrame([{
-    'rainfall_mm': 1000,
     'pesticides_tonnes': 5000,
     'avg_temp': 20,
     'crop': 'Wheat',
@@ -140,9 +140,8 @@ print(f"Predicted yield: {prediction[0]:.0f} hg/ha")
 ### Prediction
 
 ```python
-def predict(crop, country, rainfall_mm, pesticides_tonnes, avg_temp):
+def predict(crop, country, pesticides_tonnes, avg_temp):
     input_df = pd.DataFrame([{
-        'rainfall_mm': rainfall_mm,
         'pesticides_tonnes': pesticides_tonnes,
         'avg_temp': avg_temp,
         'crop': crop,
@@ -154,10 +153,10 @@ def predict(crop, country, rainfall_mm, pesticides_tonnes, avg_temp):
 ### Recommendation
 
 ```python
-def recommend(country, rainfall_mm, pesticides_tonnes, avg_temp):
+def recommend(country, pesticides_tonnes, avg_temp):
     results = []
     for crop in SUPPORTED_CROPS:
-        yield_pred = predict(crop, country, rainfall_mm, pesticides_tonnes, avg_temp)
+        yield_pred = predict(crop, country, pesticides_tonnes, avg_temp)
         results.append({'crop': crop, 'yield': yield_pred})
     
     # Sort by yield descending

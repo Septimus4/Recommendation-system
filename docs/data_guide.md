@@ -2,6 +2,8 @@
 
 Documentation for datasets used in the Crop Yield Prediction system.
 
+> **Note**: While the consolidated dataset contains `rainfall_mm`, this feature is **not used in the production model** because the raw rainfall data is a country-level constant (same value for all years), making it unsuitable for predictive modeling.
+
 ## Dataset Overview
 
 ### Source Files
