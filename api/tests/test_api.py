@@ -19,24 +19,21 @@ class TestSchemas:
         request = PredictionRequest(
             crop="Wheat",
             country="India",
-            rainfall_mm=1000,
             pesticides_tonnes=5000,
             avg_temp=20
         )
         assert request.crop == "Wheat"
         assert request.country == "India"
-        assert request.rainfall_mm == 1000
         assert request.pesticides_tonnes == 5000
         assert request.avg_temp == 20
     
-    def test_prediction_request_negative_rainfall(self):
-        """Test that negative rainfall raises error."""
+    def test_prediction_request_negative_pesticides(self):
+        """Test that negative pesticides raises error."""
         with pytest.raises(ValueError):
             PredictionRequest(
                 crop="Wheat",
                 country="India",
-                rainfall_mm=-100,
-                pesticides_tonnes=5000,
+                pesticides_tonnes=-100,
                 avg_temp=20
             )
     
@@ -46,7 +43,6 @@ class TestSchemas:
             PredictionRequest(
                 crop="Wheat",
                 country="India",
-                rainfall_mm=1000,
                 pesticides_tonnes=5000,
                 avg_temp=100  # Too high
             )
@@ -55,7 +51,6 @@ class TestSchemas:
         """Test valid recommendation request."""
         request = RecommendationRequest(
             country="India",
-            rainfall_mm=1000,
             pesticides_tonnes=5000,
             avg_temp=20,
             top_n=5
@@ -67,7 +62,6 @@ class TestSchemas:
         """Test that top_n is optional."""
         request = RecommendationRequest(
             country="India",
-            rainfall_mm=1000,
             pesticides_tonnes=5000,
             avg_temp=20
         )
@@ -100,27 +94,25 @@ class TestModelLoader:
 class TestValidation:
     """Tests for input validation logic."""
     
-    def test_rainfall_bounds(self):
-        """Test rainfall must be within bounds."""
-        # Valid
+    def test_pesticides_bounds(self):
+        """Test pesticides must be within bounds."""
+        # Valid zero
         request = PredictionRequest(
             crop="Wheat",
             country="India",
-            rainfall_mm=0,
             pesticides_tonnes=0,
             avg_temp=20
         )
-        assert request.rainfall_mm == 0
+        assert request.pesticides_tonnes == 0
         
-        # Max valid
+        # Valid high value
         request = PredictionRequest(
             crop="Wheat",
             country="India",
-            rainfall_mm=10000,
-            pesticides_tonnes=0,
+            pesticides_tonnes=100000,
             avg_temp=20
         )
-        assert request.rainfall_mm == 10000
+        assert request.pesticides_tonnes == 100000
     
     def test_temperature_bounds(self):
         """Test temperature must be within realistic bounds."""
@@ -128,7 +120,6 @@ class TestValidation:
         request = PredictionRequest(
             crop="Wheat",
             country="Canada",
-            rainfall_mm=500,
             pesticides_tonnes=100,
             avg_temp=-50
         )
@@ -138,7 +129,6 @@ class TestValidation:
         request = PredictionRequest(
             crop="Wheat",
             country="Saudi Arabia",
-            rainfall_mm=50,
             pesticides_tonnes=100,
             avg_temp=60
         )

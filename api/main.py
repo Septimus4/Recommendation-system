@@ -108,7 +108,6 @@ async def predict_yield(request: PredictionRequest):
     
     - **crop**: Name of the crop (e.g., "Wheat", "Maize", "Rice, paddy")
     - **country**: Country name (e.g., "India", "United States")
-    - **rainfall_mm**: Average annual rainfall in millimeters
     - **pesticides_tonnes**: Pesticides usage in tonnes
     - **avg_temp**: Average temperature in Celsius
     """
@@ -123,27 +122,25 @@ async def predict_yield(request: PredictionRequest):
         )
     
     # Validate input ranges
-    if request.rainfall_mm < 0:
-        raise HTTPException(status_code=400, detail="rainfall_mm must be non-negative")
     if request.pesticides_tonnes < 0:
         raise HTTPException(status_code=400, detail="pesticides_tonnes must be non-negative")
     if request.avg_temp < -50 or request.avg_temp > 60:
         raise HTTPException(status_code=400, detail="avg_temp must be between -50 and 60")
     
     try:
-        predicted_yield = model_loader.predict(
+        result = model_loader.predict(
             crop=request.crop,
             country=request.country,
-            rainfall_mm=request.rainfall_mm,
             pesticides_tonnes=request.pesticides_tonnes,
             avg_temp=request.avg_temp
         )
         
         return PredictionResponse(
             crop=request.crop,
-            predicted_yield=round(predicted_yield, 2),
+            predicted_yield=round(result["predicted_yield"], 2),
             yield_unit="hg/ha",
-            model_version=model_loader.model_version
+            model_version=model_loader.model_version,
+            warnings=result.get("warnings", [])
         )
     
     except Exception as e:
@@ -159,7 +156,6 @@ async def recommend_crops(request: RecommendationRequest):
     Returns a ranked list of crops sorted by predicted yield.
     
     - **country**: Country name (e.g., "India", "United States")
-    - **rainfall_mm**: Average annual rainfall in millimeters
     - **pesticides_tonnes**: Pesticides usage in tonnes
     - **avg_temp**: Average temperature in Celsius
     - **top_n**: Number of top recommendations to return (optional, default: all)
@@ -168,17 +164,14 @@ async def recommend_crops(request: RecommendationRequest):
         raise HTTPException(status_code=503, detail="Model not loaded")
     
     # Validate input ranges
-    if request.rainfall_mm < 0:
-        raise HTTPException(status_code=400, detail="rainfall_mm must be non-negative")
     if request.pesticides_tonnes < 0:
         raise HTTPException(status_code=400, detail="pesticides_tonnes must be non-negative")
     if request.avg_temp < -50 or request.avg_temp > 60:
         raise HTTPException(status_code=400, detail="avg_temp must be between -50 and 60")
     
     try:
-        recommendations = model_loader.recommend(
+        result = model_loader.recommend(
             country=request.country,
-            rainfall_mm=request.rainfall_mm,
             pesticides_tonnes=request.pesticides_tonnes,
             avg_temp=request.avg_temp,
             top_n=request.top_n
@@ -192,18 +185,18 @@ async def recommend_crops(request: RecommendationRequest):
                 predicted_yield=round(rec["predicted_yield"], 2),
                 yield_unit=rec["yield_unit"]
             )
-            for rec in recommendations
+            for rec in result["recommendations"]
         ]
         
         return RecommendationResponse(
             recommendations=crop_recommendations,
             context={
                 "country": request.country,
-                "rainfall_mm": request.rainfall_mm,
                 "pesticides_tonnes": request.pesticides_tonnes,
                 "avg_temp": request.avg_temp
             },
-            model_version=model_loader.model_version
+            model_version=model_loader.model_version,
+            warnings=result.get("warnings", [])
         )
     
     except Exception as e:

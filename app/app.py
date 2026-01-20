@@ -54,7 +54,7 @@ def get_model_info() -> Optional[dict]:
     return None
 
 
-def make_prediction(crop: str, country: str, rainfall: float, pesticides: float, temp: float) -> Optional[dict]:
+def make_prediction(crop: str, country: str, pesticides: float, temp: float) -> Optional[dict]:
     """Make a yield prediction via the API."""
     try:
         response = requests.post(
@@ -62,7 +62,6 @@ def make_prediction(crop: str, country: str, rainfall: float, pesticides: float,
             json={
                 "crop": crop,
                 "country": country,
-                "rainfall_mm": rainfall,
                 "pesticides_tonnes": pesticides,
                 "avg_temp": temp
             },
@@ -79,14 +78,13 @@ def make_prediction(crop: str, country: str, rainfall: float, pesticides: float,
     return None
 
 
-def get_recommendations(country: str, rainfall: float, pesticides: float, temp: float, top_n: int = 10) -> Optional[dict]:
+def get_recommendations(country: str, pesticides: float, temp: float, top_n: int = 10) -> Optional[dict]:
     """Get crop recommendations via the API."""
     try:
         response = requests.post(
             f"{API_URL}/recommend",
             json={
                 "country": country,
-                "rainfall_mm": rainfall,
                 "pesticides_tonnes": pesticides,
                 "avg_temp": temp,
                 "top_n": top_n
@@ -158,15 +156,6 @@ if mode == "🔮 Prediction":
         )
         
         # Environmental parameters
-        rainfall = st.slider(
-            "Average Rainfall (mm/year)",
-            min_value=0,
-            max_value=5000,
-            value=1000,
-            step=50,
-            help="Average annual rainfall in millimeters"
-        )
-        
         pesticides = st.number_input(
             "Pesticides Usage (tonnes)",
             min_value=0.0,
@@ -198,7 +187,6 @@ if mode == "🔮 Prediction":
                     result = make_prediction(
                         crop=selected_crop,
                         country=selected_country,
-                        rainfall=rainfall,
                         pesticides=pesticides,
                         temp=avg_temp
                     )
@@ -252,15 +240,6 @@ elif mode == "📊 Recommendation":
         )
         
         # Environmental parameters
-        rec_rainfall = st.slider(
-            "Average Rainfall (mm/year)",
-            min_value=0,
-            max_value=5000,
-            value=1000,
-            step=50,
-            key="rec_rainfall"
-        )
-        
         rec_pesticides = st.number_input(
             "Pesticides Usage (tonnes)",
             min_value=0.0,
@@ -299,7 +278,6 @@ elif mode == "📊 Recommendation":
                 with st.spinner("Getting recommendations..."):
                     result = get_recommendations(
                         country=rec_country,
-                        rainfall=rec_rainfall,
                         pesticides=rec_pesticides,
                         temp=rec_temp,
                         top_n=top_n
@@ -350,7 +328,7 @@ elif mode == "📊 Recommendation":
                     st.success(f"""
                     🏆 **Top Recommendation: {top_crop['crop']}**
                     
-                    Based on your conditions (Rainfall: {rec_rainfall}mm, Temperature: {rec_temp}°C), 
+                    Based on your conditions (Temperature: {rec_temp}°C, Pesticides: {rec_pesticides:,.0f} tonnes), 
                     **{top_crop['crop']}** is predicted to have the highest yield of 
                     **{top_crop['predicted_yield']:,.0f} {top_crop['yield_unit']}**.
                     """)
@@ -371,7 +349,6 @@ elif mode == "ℹ️ About":
     
     - **🔮 Yield Prediction**: Predict the expected yield for a specific crop based on:
         - Country/Region
-        - Average annual rainfall
         - Pesticides usage
         - Average temperature
     
@@ -381,7 +358,7 @@ elif mode == "ℹ️ About":
     ### How It Works
     
     1. The system uses a machine learning model trained on historical agricultural data
-    2. The model considers environmental factors (rainfall, temperature) and agricultural inputs (pesticides)
+    2. The model considers environmental factors (temperature) and agricultural inputs (pesticides)
     3. Predictions are made for yield in hectograms per hectare (hg/ha)
     
     ### Data Sources

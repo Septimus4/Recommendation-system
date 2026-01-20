@@ -1,7 +1,6 @@
 {
   "model_name": "Random Forest",
   "numeric_features": [
-    "rainfall_mm",
     "pesticides_tonnes",
     "avg_temp"
   ],
@@ -10,21 +9,21 @@
     "country"
   ],
   "target": "yield",
-  "test_rmse": 27847.738778431216,
-  "test_mae": 15214.394077843719,
-  "test_r2": 0.8984858307478968,
-  "training_samples": 10775,
-  "test_samples": 2355,
+  "test_rmse": 19580.109388114182,
+  "test_mae": 9709.15433952365,
+  "test_r2": 0.9416002622087158,
+  "training_samples": 10504,
+  "test_samples": 2626,
   "supported_crops": [
+    "Cassava",
     "Maize",
+    "Plantains and others",
     "Potatoes",
     "Rice, paddy",
     "Sorghum",
     "Soybeans",
-    "Wheat",
-    "Cassava",
     "Sweet potatoes",
-    "Plantains and others",
+    "Wheat",
     "Yams"
   ],
   "supported_countries": [
@@ -129,5 +128,7 @@
     "Uruguay",
     "Zambia",
     "Zimbabwe"
-  ]
+  ],
+  "trained_at": "2026-01-20T09:40:30.910203",
+  "note": "Model trained without rainfall_mm (removed due to data quality issues)"
 }

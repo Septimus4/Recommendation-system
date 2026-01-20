@@ -10,7 +10,6 @@ class PredictionRequest(BaseModel):
     """Request schema for yield prediction."""
     crop: str = Field(..., description="Name of the crop", example="Wheat")
     country: str = Field(..., description="Country name", example="India")
-    rainfall_mm: float = Field(..., ge=0, le=10000, description="Average annual rainfall in mm", example=1000)
     pesticides_tonnes: float = Field(..., ge=0, description="Pesticides usage in tonnes", example=5000)
     avg_temp: float = Field(..., ge=-50, le=60, description="Average temperature in Celsius", example=20)
     
@@ -20,7 +19,6 @@ class PredictionRequest(BaseModel):
                 {
                     "crop": "Wheat",
                     "country": "India",
-                    "rainfall_mm": 1000,
                     "pesticides_tonnes": 5000,
                     "avg_temp": 20
                 }
@@ -35,12 +33,12 @@ class PredictionResponse(BaseModel):
     predicted_yield: float = Field(..., description="Predicted yield value")
     yield_unit: str = Field(default="hg/ha", description="Unit of yield measurement")
     model_version: str = Field(default="1.0.0", description="Model version used for prediction")
+    warnings: List[str] = Field(default=[], description="Any warnings about the prediction")
 
 
 class RecommendationRequest(BaseModel):
     """Request schema for crop recommendation."""
     country: str = Field(..., description="Country name", example="India")
-    rainfall_mm: float = Field(..., ge=0, le=10000, description="Average annual rainfall in mm", example=1000)
     pesticides_tonnes: float = Field(..., ge=0, description="Pesticides usage in tonnes", example=5000)
     avg_temp: float = Field(..., ge=-50, le=60, description="Average temperature in Celsius", example=20)
     top_n: Optional[int] = Field(default=None, ge=1, le=20, description="Number of top recommendations")
@@ -50,7 +48,6 @@ class RecommendationRequest(BaseModel):
             "examples": [
                 {
                     "country": "India",
-                    "rainfall_mm": 1000,
                     "pesticides_tonnes": 5000,
                     "avg_temp": 20,
                     "top_n": 5
@@ -73,6 +70,7 @@ class RecommendationResponse(BaseModel):
     recommendations: List[CropRecommendation] = Field(..., description="List of crop recommendations")
     context: Dict[str, Any] = Field(..., description="Input context used for recommendation")
     model_version: str = Field(default="1.0.0", description="Model version used")
+    warnings: List[str] = Field(default=[], description="Any warnings about the recommendation")
 
 
 class HealthResponse(BaseModel):

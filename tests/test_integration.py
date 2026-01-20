@@ -25,21 +25,19 @@ class TestPredictionSchema:
         request = PredictionRequest(
             crop="Wheat",
             country="India",
-            rainfall_mm=1000,
             pesticides_tonnes=5000,
             avg_temp=20
         )
         assert request.crop == "Wheat"
-        assert request.rainfall_mm == 1000
+        assert request.pesticides_tonnes == 5000
     
-    def test_rejects_negative_rainfall(self):
-        """Test negative rainfall is rejected."""
+    def test_rejects_negative_pesticides(self):
+        """Test negative pesticides is rejected."""
         with pytest.raises(ValueError):
             PredictionRequest(
                 crop="Wheat",
                 country="India",
-                rainfall_mm=-100,
-                pesticides_tonnes=5000,
+                pesticides_tonnes=-100,
                 avg_temp=20
             )
     
@@ -49,7 +47,6 @@ class TestPredictionSchema:
             PredictionRequest(
                 crop="Wheat",
                 country="India",
-                rainfall_mm=1000,
                 pesticides_tonnes=5000,
                 avg_temp=100  # Too high
             )
@@ -74,7 +71,6 @@ class TestRecommendationSchema:
         """Test valid recommendation request."""
         request = RecommendationRequest(
             country="India",
-            rainfall_mm=1000,
             pesticides_tonnes=5000,
             avg_temp=20,
             top_n=5
@@ -86,7 +82,6 @@ class TestRecommendationSchema:
         """Test top_n is optional."""
         request = RecommendationRequest(
             country="India",
-            rainfall_mm=1000,
             pesticides_tonnes=5000,
             avg_temp=20
         )

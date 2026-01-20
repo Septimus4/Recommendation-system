@@ -47,7 +47,10 @@ SUPPORTED_CROPS = [
 ]
 
 # Feature columns for modeling
-NUMERIC_FEATURES = ["rainfall_mm", "pesticides_tonnes", "avg_temp"]
+# NOTE: rainfall_mm was removed because in the training data it's a country-level constant
+# (same value for all years), making it confounded with country identity and useless for
+# "what-if" scenarios. See data/raw/rainfall.csv for evidence.
+NUMERIC_FEATURES = ["pesticides_tonnes", "avg_temp"]
 CATEGORICAL_FEATURES = ["crop", "country"]
 TARGET_COLUMN = "yield"
 

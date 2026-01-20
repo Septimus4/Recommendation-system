@@ -38,7 +38,7 @@ class ModelLoader:
             "Maize", "Potatoes", "Rice, paddy", "Sorghum", "Soybeans", 
             "Wheat", "Cassava", "Sweet potatoes", "Plantains and others", "Yams"
         ]
-        self._default_features = ["rainfall_mm", "pesticides_tonnes", "avg_temp", "crop", "country"]
+        self._default_features = ["pesticides_tonnes", "avg_temp", "crop", "country"]
     
     def load_model(self) -> None:
         """Load the model and metadata from disk."""
@@ -93,33 +93,63 @@ class ModelLoader:
             return numeric + categorical
         return self._default_features
     
+    def validate_inputs(
+        self,
+        country: str,
+        pesticides_tonnes: float,
+        avg_temp: float
+    ) -> Dict:
+        """
+        Validate inputs and return warnings.
+        
+        Returns:
+            Dictionary with 'warnings' list.
+        """
+        warnings = []
+        
+        # Temperature: warn if outside typical global range
+        if avg_temp < -10 or avg_temp > 35:
+            warnings.append(
+                f"Temperature ({avg_temp:.1f}°C) is outside typical agricultural range "
+                f"(-10°C - 35°C). Prediction may be less reliable."
+            )
+        
+        # Pesticides: warn if extremely high
+        if pesticides_tonnes > 500000:
+            warnings.append(
+                f"Pesticides ({pesticides_tonnes:.0f} tonnes) is very high. "
+                f"Prediction may be less reliable."
+            )
+        
+        return {"warnings": warnings}
+    
     def predict(
         self,
         crop: str,
         country: str,
-        rainfall_mm: float,
         pesticides_tonnes: float,
         avg_temp: float
-    ) -> float:
+    ) -> Dict:
         """
         Make a yield prediction for a single input.
         
         Args:
             crop: Crop name.
             country: Country name.
-            rainfall_mm: Average rainfall in mm.
             pesticides_tonnes: Pesticides usage in tonnes.
             avg_temp: Average temperature in Celsius.
             
         Returns:
-            Predicted yield value.
+            Dictionary with predicted_yield and any warnings.
         """
         if not self.is_loaded:
             raise RuntimeError("Model not loaded. Call load_model() first.")
         
+        # Validate inputs
+        validation = self.validate_inputs(country, pesticides_tonnes, avg_temp)
+        
         # Create input DataFrame
         input_df = pd.DataFrame([{
-            "rainfall_mm": rainfall_mm,
             "pesticides_tonnes": pesticides_tonnes,
             "avg_temp": avg_temp,
             "crop": crop,
@@ -128,33 +158,38 @@ class ModelLoader:
         
         # Make prediction
         prediction = self.model.predict(input_df)[0]
-        
         # Ensure non-negative yield
-        return max(0, float(prediction))
+        yield_value = max(0, float(prediction))
+        
+        return {
+            "predicted_yield": yield_value,
+            "warnings": validation["warnings"]
+        }
     
     def recommend(
         self,
         country: str,
-        rainfall_mm: float,
         pesticides_tonnes: float,
         avg_temp: float,
         top_n: Optional[int] = None
-    ) -> List[Dict]:
+    ) -> Dict:
         """
         Recommend crops based on predicted yields.
         
         Args:
             country: Country name.
-            rainfall_mm: Average rainfall in mm.
             pesticides_tonnes: Pesticides usage in tonnes.
             avg_temp: Average temperature in Celsius.
             top_n: Number of top recommendations to return.
             
         Returns:
-            List of crop recommendations sorted by yield.
+            Dictionary with recommendations list and any warnings.
         """
         if not self.is_loaded:
             raise RuntimeError("Model not loaded. Call load_model() first.")
+        
+        # Validate inputs
+        validation = self.validate_inputs(country, pesticides_tonnes, avg_temp)
         
         crops = self.supported_crops
         
@@ -162,7 +197,6 @@ class ModelLoader:
         input_data = []
         for crop in crops:
             input_data.append({
-                "rainfall_mm": rainfall_mm,
                 "pesticides_tonnes": pesticides_tonnes,
                 "avg_temp": avg_temp,
                 "crop": crop,
@@ -195,7 +229,10 @@ class ModelLoader:
         if top_n is not None:
             results = results[:top_n]
         
-        return results
+        return {
+            "recommendations": results,
+            "warnings": validation["warnings"]
+        }
 
 
 # Singleton instance for the API

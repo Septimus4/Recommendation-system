@@ -138,7 +138,6 @@ POST /predict
 {
     "crop": "Wheat",
     "country": "India",
-    "rainfall_mm": 1000,
     "pesticides_tonnes": 5000,
     "avg_temp": 20
 }
@@ -149,7 +148,6 @@ POST /predict
 POST /recommend
 {
     "country": "India",
-    "rainfall_mm": 1000,
     "pesticides_tonnes": 5000,
     "avg_temp": 20,
     "top_n": 5
@@ -199,13 +197,14 @@ pytest tests/ -v
 ## 📋 Features Used
 
 - **Numeric Features**:
-  - `rainfall_mm`: Average annual rainfall
-  - `pesticides_tonnes`: Pesticides usage
+  - `pesticides_tonnes`: Pesticides usage (proxy for agricultural input intensity)
   - `avg_temp`: Average temperature
 
 - **Categorical Features**:
   - `crop`: Type of crop
   - `country`: Country/region
+
+> **Note**: Rainfall was removed from the model because the training data contains only country-level averages (same value for all years), making it a proxy for country identity rather than a meaningful predictor for "what-if" scenarios.
 
 ## 🌍 Supported Crops
 
@@ -230,38 +229,12 @@ pytest tests/ -v
 - Model is trained on country-level data, not local/regional
 - Pesticide values are proxies for agricultural input intensity
 
-## 🔮 Future Improvements
-
-- Add soil type as a feature
-- Include real-time weather data
-- Add economic/price data for profit optimization
-- Regional/local level predictions
-- Time series forecasting
-
 ## 📚 Documentation
 
 - [API Documentation](http://localhost:8000/docs) (when running)
 - [Data Fusion Summary](data/processed/fusion_summary.txt)
 - [Business Report](reports/business_report.pdf)
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit changes
-4. Push to the branch
-5. Open a Pull Request
-
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 👥 Authors
-
-- School Project Team
-
-## 🙏 Acknowledgments
-
-- FAO for crop yield data
-- Climate data providers
-- scikit-learn and MLflow communities
+This project is licensed under the GNU V3 License - see the [LICENSE](LICENSE) file for details.

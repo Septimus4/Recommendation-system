@@ -31,7 +31,6 @@ def predict_yield(
     model,
     crop: str,
     country: str,
-    rainfall_mm: float,
     pesticides_tonnes: float,
     avg_temp: float
 ) -> float:
@@ -42,7 +41,6 @@ def predict_yield(
         model: Trained model pipeline.
         crop: Crop name.
         country: Country name.
-        rainfall_mm: Average rainfall in mm.
         pesticides_tonnes: Pesticides usage in tonnes.
         avg_temp: Average temperature.
         
@@ -52,7 +50,6 @@ def predict_yield(
     input_df = pd.DataFrame([{
         "crop": crop,
         "country": country,
-        "rainfall_mm": rainfall_mm,
         "pesticides_tonnes": pesticides_tonnes,
         "avg_temp": avg_temp
     }])
@@ -64,7 +61,6 @@ def predict_yield(
 def recommend_crops(
     model,
     country: str,
-    rainfall_mm: float,
     pesticides_tonnes: float,
     avg_temp: float,
     crops: Optional[List[str]] = None,
@@ -76,7 +72,6 @@ def recommend_crops(
     Args:
         model: Trained model pipeline.
         country: Country name.
-        rainfall_mm: Average rainfall in mm.
         pesticides_tonnes: Pesticides usage in tonnes.
         avg_temp: Average temperature.
         crops: List of crops to consider. Defaults to SUPPORTED_CROPS.
@@ -93,7 +88,6 @@ def recommend_crops(
         input_data.append({
             "crop": crop,
             "country": country,
-            "rainfall_mm": rainfall_mm,
             "pesticides_tonnes": pesticides_tonnes,
             "avg_temp": avg_temp
         })
